@@ -7,26 +7,35 @@ static class Program
     static RegistryKey HiddenFilesRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", true);
     static RegistryKey DesktopFilesLocationRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Bags\1\Desktop", true);
     static string IconLayouts = "IconLayouts";
+    static string savedLayoutPath = Path.Combine(Path.GetTempPath(), "savedLayout.dat");
 
     static void Main()
     {
-        object DesktopFilesLocationValue;
+        try {
+            byte[] iconLayouts;
 
-        while(true)
+            while(true)
+            {
+                CreateButton("-| Press ENTER to HIDE files |");
+
+
+                iconLayouts = (byte[])ReadRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts);
+                File.WriteAllBytes(savedLayoutPath, iconLayouts);
+
+
+                HideHiddenFiles();
+                RestartExplorer();
+
+                CreateButton("-| Press ENTER to SHOW files |");
+
+                WriteRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts, iconLayouts);
+
+                ShowHiddenFiles();
+                RestartExplorer();
+            }
+        } catch (Exception ex)
         {
-            CreateButton("-| Press ENTER to HIDE files |");
-
-            DesktopFilesLocationValue = ReadRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts);
-
-            HideHiddenFiles();
-            RestartExplorer();
-
-            CreateButton("-| Press ENTER to SHOW files |");
-
-            WriteRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts, DesktopFilesLocationValue);
-
-            ShowHiddenFiles();
-            RestartExplorer();
+            Console.Error.WriteLine("error: " + ex.Message);
         }
     }
 
@@ -47,89 +56,45 @@ static class Program
 
     static object ReadRegistryValue(RegistryKey Key, string ValueName)
     {
-        Console.Write("Reading value from a register ... ");
-
-        try
-        {   object value = DesktopFilesLocationRegistryKey.GetValue(ValueName);
-
-            Console.WriteLine("successfuly");
-
-            return value;
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
-
-        return null;
+        Console.Write("Reading value from Registry ... ");
+        return DesktopFilesLocationRegistryKey.GetValue(ValueName);
     }
 
     static void WriteRegistryValue(RegistryKey Key, string ValueName, object Value)
     {
-        Console.Write("Writing a value to a register ... ");
-        try
-        {
-            Key.SetValue(ValueName, Value, RegistryValueKind.Binary);
 
-            Console.WriteLine("successfuly");
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
+        Console.Write("Writing a value to Registry ... ");
+        Key.SetValue(ValueName, Value, RegistryValueKind.Binary);
+
     }
 
     static void HideHiddenFiles()
     {
         Console.Write("Hide hidden files ... ");
 
-        try
-        {
-            HiddenFilesRegistryKey.SetValue("Hidden", 2, RegistryValueKind.DWord);
-
-            Console.WriteLine("successfully");
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
+        HiddenFilesRegistryKey.SetValue("Hidden", 2, RegistryValueKind.DWord);
     }
 
     static void ShowHiddenFiles()
     {
         Console.Write("Show hidden files ... ");
-
-        try
-        {
-            HiddenFilesRegistryKey.SetValue("Hidden", 1, RegistryValueKind.DWord);
-
-            Console.WriteLine("successfully");
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
+        HiddenFilesRegistryKey.SetValue("Hidden", 1, RegistryValueKind.DWord);
     }
 
     static void RestartExplorer()
     {
         Console.Write("Restart explorer.exe ... ");
-        try
+        foreach(var process in Process.GetProcessesByName("explorer"))
         {
-            foreach(var process in Process.GetProcessesByName("explorer"))
-            {
-                process.Kill();
-            }
+            process.Kill();
+        }
 
-            Thread.Sleep(100);
+        Thread.Sleep(100);
+
 
             Process.Start("explorer.exe C:\\");
 
-            Console.WriteLine("successfully");
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
+
+        Console.WriteLine("successfully");
     }
 }
