@@ -91,7 +91,9 @@ static class Program
 
         Thread.Sleep(100);
 
-        Process.Start("explorer.exe", @"C:\");
+
+            Process.Start("explorer.exe C:\\");
+
 
         Console.WriteLine("successfully");
     }
