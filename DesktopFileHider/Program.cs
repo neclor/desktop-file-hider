@@ -18,8 +18,10 @@ static class Program
             {
                 CreateButton("-| Press ENTER to HIDE files |");
 
+
                 iconLayouts = (byte[])ReadRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts);
                 File.WriteAllBytes(savedLayoutPath, iconLayouts);
+
 
                 HideHiddenFiles();
                 RestartExplorer();
@@ -60,8 +62,10 @@ static class Program
 
     static void WriteRegistryValue(RegistryKey Key, string ValueName, object Value)
     {
+
         Console.Write("Writing a value to Registry ... ");
         Key.SetValue(ValueName, Value, RegistryValueKind.Binary);
+
     }
 
     static void HideHiddenFiles()
@@ -87,7 +91,9 @@ static class Program
 
         Thread.Sleep(100);
 
-        Process.Start("explorer.exe");
+
+            Process.Start("explorer.exe C:\\");
+
 
         Console.WriteLine("successfully");
     }
