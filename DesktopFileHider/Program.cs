@@ -21,7 +21,7 @@ static class Program
                 iconLayouts = (byte[])ReadRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts);
                 File.WriteAllBytes(savedLayoutPath, iconLayouts);
 
-                //HideHiddenFiles();
+                HideHiddenFiles();
                 RestartExplorer();
 
                 CreateButton("-| Press ENTER to SHOW files |");
