@@ -17,7 +17,6 @@ static class Program
             CreateButton("-| Press ENTER to HIDE files |");
 
             DesktopFilesLocationValue = ReadRegistryValue(DesktopFilesLocationRegistryKey, IconLayouts);
-            Console.WriteLine(DesktopFilesLocationValue.ToString);
 
             HideHiddenFiles();
             RestartExplorer();
@@ -70,7 +69,7 @@ static class Program
         Console.Write("Writing a value to a register ... ");
         try
         {
-            Key.SetValue(ValueName, Value, RegistryValueKind.String);
+            Key.SetValue(ValueName, Value, RegistryValueKind.Binary);
 
             Console.WriteLine("successfuly");
         }
