@@ -80,22 +80,15 @@ static class Program
     static void RestartExplorer()
     {
         Console.Write("Restart explorer.exe ... ");
-        try
+        foreach(var process in Process.GetProcessesByName("explorer"))
         {
-            foreach(var process in Process.GetProcessesByName("explorer"))
-            {
-                process.Kill();
-            }
-
-            Thread.Sleep(100);
-
-            Process.Start("explorer.exe");
-
-            Console.WriteLine("successfully");
+            process.Kill();
         }
-        catch(Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
+
+        Thread.Sleep(100);
+
+        Process.Start("explorer.exe");
+
+        Console.WriteLine("successfully");
     }
 }
